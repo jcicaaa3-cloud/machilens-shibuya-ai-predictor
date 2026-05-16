@@ -1,0 +1,38 @@
+[
+  {
+    "epoch": 1,
+    "train_loss": 1.1216040288700777,
+    "val_loss_total": 1.100619524717331,
+    "val_loss_success": 0.6876595169305801,
+    "val_loss_scenario": 1.0276670157909393,
+    "val_loss_regression": 0.003786496294196695,
+    "val_success_accuracy": 0.5714285714285714,
+    "val_success_brier": 0.24801033564976283,
+    "val_delta_flow_mae": 0.04569714353198097,
+    "val_delta_vacancy_mae": 0.05916463136672974
+  },
+  {
+    "epoch": 2,
+    "train_loss": 1.083475905306199,
+    "val_loss_total": 1.0502788126468658,
+    "val_loss_success": 0.6809877157211304,
+    "val_loss_scenario": 0.9209411591291428,
+    "val_loss_regression": 0.0018292463500984013,
+    "val_success_accuracy": 0.5333333333333333,
+    "val_success_brier": 0.24615320705232166,
+    "val_delta_flow_mae": 0.02063063070887611,
+    "val_delta_vacancy_mae": 0.050188890525272915
+  },
+  {
+    "epoch": 3,
+    "train_loss": 1.0346527274917154,
+    "val_loss_total": 0.9747796952724457,
+    "val_loss_success": 0.6741974502801895,
+    "val_loss_scenario": 0.749537855386734,
+    "val_loss_regression": 0.0015341711696237326,
+    "val_success_accuracy": 0.5714285714285714,
+    "val_success_brier": 0.24356502351306733,
+    "val_delta_flow_mae": 0.02287384867668152,
+    "val_delta_vacancy_mae": 0.047274211758659
+  }
+]

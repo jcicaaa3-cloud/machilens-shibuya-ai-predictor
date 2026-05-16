@@ -1,0 +1,6 @@
+{
+  "rf_success_accuracy": 0.846875,
+  "rf_success_brier": 0.11714405745137495,
+  "rf_delta_flow_mae": 0.01732597498086274,
+  "rf_delta_vacancy_mae": 0.010212293281071195
+}

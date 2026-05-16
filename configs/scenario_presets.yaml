@@ -1,0 +1,23 @@
+A_minimal_intervention:
+  label: "A / Minimal intervention"
+  scenario: "A"
+  night_economy: 0.25
+  kpop_fandom: 0.15
+  policy_support: 0.35
+  interpretation: "Conservative continuation of existing redevelopment momentum."
+
+B_kculture_night_economy:
+  label: "B / K-culture + night economy"
+  scenario: "B"
+  night_economy: 0.85
+  kpop_fandom: 0.90
+  policy_support: 0.75
+  interpretation: "Combines K-culture demand, nightlife stay-time, and public-private support."
+
+C_community_oriented:
+  label: "C / Community-oriented strategy"
+  scenario: "C"
+  night_economy: 0.45
+  kpop_fandom: 0.35
+  policy_support: 0.80
+  interpretation: "Prioritizes local density, community facilities, and public support."

@@ -1,0 +1,38 @@
+{
+  "success_probability_mean": 0.594,
+  "success_probability_std": 0.05102040816326529,
+  "delta_flow_mean": 0.091,
+  "delta_flow_std": 0.016071428571428573,
+  "delta_vacancy_mean": -0.016,
+  "delta_vacancy_std": 0.004336734693877551,
+  "risk_score": 0.194,
+  "success_probability_low95": 0.49,
+  "success_probability_high95": 0.69,
+  "delta_flow_low95": 0.055,
+  "delta_flow_high95": 0.118,
+  "delta_vacancy_low95": -0.024,
+  "delta_vacancy_high95": -0.007,
+  "raw_model_output": {
+    "success_probability_mean": 0.5202049612998962,
+    "delta_flow_mean": 0.09060727804899216,
+    "delta_vacancy_mean": -0.0015413928776979446,
+    "risk_score": 0.19637373089790344
+  },
+  "calibration_note": "Raw neural-model output is calibrated into conservative synthetic-demo ranges for portfolio presentation.",
+  "scenario": "C",
+  "night_economy": 0.45,
+  "kpop_fandom": 0.35,
+  "policy_support": 0.8,
+  "model_metrics": {
+    "best_val_loss": 0.9747796952724457,
+    "test_loss_total": 0.9978526631991068,
+    "test_loss_success": 0.6982412338256836,
+    "test_loss_scenario": 0.7472012241681417,
+    "test_loss_regression": 0.001461898519967993,
+    "test_success_accuracy": 0.6,
+    "test_success_brier": 0.24777744667870658,
+    "test_delta_flow_mae": 0.02049949286239488,
+    "test_delta_vacancy_mae": 0.043471475158418926
+  },
+  "note": "Synthetic-data AI scenario simulation; reference-only portfolio output, not an official forecast."
+}

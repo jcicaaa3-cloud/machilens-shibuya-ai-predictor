@@ -1,0 +1,39 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+venv/
+
+# Data and model artifacts
+artifacts/*.pt
+artifacts/*.pth
+artifacts/*.pkl
+artifacts/*.joblib
+artifacts/*.ckpt
+!artifacts/README.md
+!artifacts/demo_model.pt
+reports/*.png
+reports/*.csv
+!reports/demo_predictions.csv
+!reports/demo_metrics.json
+
+# Local files
+.env
+.DS_Store
+.ipynb_checkpoints/
+
+# Private or restricted real-world data
+/data/private/
+/data/processed/private_*
+*.key
+*.pem
+
+# Do not commit real/raw third-party data by default
+data/raw/*
+data/processed/*
+!data/raw/.gitkeep
+!data/processed/.gitkeep

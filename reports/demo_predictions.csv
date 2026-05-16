@@ -1,0 +1,4 @@
+scenario,success_probability_mean,success_probability_low95,success_probability_high95,delta_flow_mean,delta_flow_low95,delta_flow_high95,delta_vacancy_mean,delta_vacancy_low95,delta_vacancy_high95,risk_score,note
+A,0.445,0.34,0.56,0.058,0.028,0.086,-0.008,-0.014,-0.002,0.153,"Synthetic-data AI scenario simulation; reference-only portfolio output, not an official forecast."
+B,0.713,0.61,0.8,0.107,0.071,0.132,-0.011,-0.018,-0.004,0.26520000000000005,"Synthetic-data AI scenario simulation; reference-only portfolio output, not an official forecast."
+C,0.594,0.49,0.69,0.091,0.055,0.118,-0.016,-0.024,-0.007,0.194,"Synthetic-data AI scenario simulation; reference-only portfolio output, not an official forecast."

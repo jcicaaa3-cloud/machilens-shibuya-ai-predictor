@@ -1,0 +1,369 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>MachiLens AI — 시부야 도시전략 예측 데모</title>
+  <meta name="description" content="MachiLens AI는 시부야 도시전략 시나리오를 합성 데이터와 AI 모델로 비교해 보는 정적 HTML 데모입니다." />
+  <style>
+    :root{
+      --bg:#fff8ec;
+      --bg2:#f5fbff;
+      --ink:#202431;
+      --muted:#626b7d;
+      --panel:#ffffff;
+      --line:#e8e1d6;
+      --sun:#ffb84d;
+      --coral:#ff7a7a;
+      --mint:#78d7b5;
+      --sky:#6bb7ff;
+      --violet:#9b8cff;
+      --deep:#23304f;
+      --warn:#fff1c6;
+      --shadow:0 18px 48px rgba(68,55,30,.14);
+      --radius:24px;
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      font-family:ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+      color:var(--ink);
+      line-height:1.68;
+      background:
+        radial-gradient(circle at 8% 3%, rgba(255,184,77,.34), transparent 28rem),
+        radial-gradient(circle at 92% 8%, rgba(107,183,255,.28), transparent 31rem),
+        radial-gradient(circle at 50% 55%, rgba(120,215,181,.20), transparent 35rem),
+        linear-gradient(180deg,var(--bg) 0%, #fffdf8 52%, var(--bg2) 100%);
+    }
+    a{color:#0f68b4; text-decoration:none}
+    a:hover{text-decoration:underline}
+    .wrap{width:min(1120px, calc(100% - 36px)); margin:0 auto}
+    .nav{
+      position:sticky; top:0; z-index:20;
+      background:rgba(255,252,246,.82);
+      border-bottom:1px solid rgba(232,225,214,.82);
+      backdrop-filter:blur(16px);
+    }
+    .nav-inner{display:flex; align-items:center; justify-content:space-between; gap:18px; padding:13px 0}
+    .brand{display:flex; align-items:center; gap:10px; font-weight:900; letter-spacing:-.2px; color:var(--deep)}
+    .brand-mark{
+      width:36px; height:36px; border-radius:14px;
+      background:conic-gradient(from 210deg, var(--sun), var(--coral), var(--violet), var(--sky), var(--mint), var(--sun));
+      box-shadow:0 10px 26px rgba(255,122,122,.22);
+    }
+    .nav-links{display:flex; gap:16px; flex-wrap:wrap; font-size:14px; font-weight:800}
+    .nav-links a{color:#53606f}
+    .hero{padding:72px 0 36px}
+    .grid{display:grid; gap:22px}
+    .hero-grid{grid-template-columns:1.12fr .88fr; align-items:stretch}
+    .eyebrow{
+      display:inline-flex; align-items:center; gap:8px;
+      padding:8px 12px; border-radius:999px;
+      background:rgba(255,255,255,.78); border:1px solid var(--line);
+      box-shadow:0 8px 22px rgba(68,55,30,.08);
+      color:#6a4a00; font-size:13px; font-weight:900;
+    }
+    h1{font-size:clamp(38px,6vw,68px); line-height:1.04; letter-spacing:-2.6px; margin:18px 0 18px; color:#1f2944}
+    .lead{font-size:clamp(17px,2vw,21px); color:#4f5868; margin:0 0 24px; max-width:790px}
+    .human-note{font-size:15px; color:#5e6473; max-width:760px; margin:18px 0 0}
+    .cta-row{display:flex; gap:12px; flex-wrap:wrap; margin:24px 0 10px}
+    .btn{
+      display:inline-flex; align-items:center; justify-content:center; gap:8px;
+      padding:13px 17px; border-radius:15px; font-weight:900;
+      border:1px solid rgba(35,48,79,.12); background:rgba(255,255,255,.82); color:#25304f;
+      box-shadow:0 12px 28px rgba(68,55,30,.10);
+    }
+    .btn.primary{border:0; background:linear-gradient(135deg,var(--sun),var(--coral)); color:#251704}
+    .btn:hover{text-decoration:none; transform:translateY(-1px)}
+    .card{background:rgba(255,255,255,.88); border:1px solid rgba(232,225,214,.92); border-radius:var(--radius); box-shadow:var(--shadow); overflow:hidden}
+    .card-pad{padding:25px}
+    .soft-card{background:linear-gradient(180deg, rgba(255,255,255,.94), rgba(255,248,236,.92))}
+    .warning{background:linear-gradient(180deg,#fff7dc,#ffffff); border-color:#f5d987}
+    .tag{
+      display:inline-flex; align-items:center; gap:6px; padding:6px 10px; border-radius:999px;
+      background:#fff2d7; color:#7d4b00; border:1px solid #f4d59a;
+      font-size:12px; font-weight:900; letter-spacing:.02em;
+    }
+    .tag.blue{background:#eaf6ff; color:#075985; border-color:#cdeaff}
+    .tag.green{background:#eafaf3; color:#136b4b; border-color:#cceedd}
+    .mini-kpis{display:grid; grid-template-columns:repeat(2,1fr); gap:12px; margin-top:18px}
+    .kpi{padding:16px; border-radius:18px; background:#fff; border:1px solid #ece5da}
+    .kpi small{display:block; color:#7b8290; font-weight:900; margin-bottom:6px}
+    .kpi b{font-size:23px; color:#27334f}
+    section{padding:42px 0}
+    .section-title{font-size:clamp(28px,3.2vw,42px); line-height:1.16; letter-spacing:-1px; margin:0 0 12px; color:#1f2944}
+    .section-sub{color:#5f6775; margin:0 0 22px; max-width:850px}
+    .two{grid-template-columns:repeat(2,1fr)}
+    .three{grid-template-columns:repeat(3,1fr)}
+    .demo-grid{grid-template-columns:.92fr 1.08fr; align-items:start}
+    label{display:block; font-weight:900; color:#27334f; margin:15px 0 8px}
+    select,input[type=range]{width:100%}
+    select{appearance:none; border:1px solid #ded7cd; background:#fff; color:#283147; border-radius:15px; padding:13px 14px; font-size:15px; font-weight:700}
+    input[type=range]{accent-color:var(--coral)}
+    .range-row{display:flex; justify-content:space-between; gap:12px; color:#838a97; font-size:13px; margin-top:2px}
+    .output-top{display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin:18px 0}
+    .metric{padding:15px; border-radius:18px; background:#fffaf0; border:1px solid #efe2cc}
+    .metric span{display:block; color:#7b8290; font-size:12px; font-weight:900; text-transform:uppercase; letter-spacing:.04em}
+    .metric b{display:block; margin-top:6px; font-size:24px; color:#263150}
+    .bar-wrap{margin:15px 0}
+    .bar-head{display:flex; justify-content:space-between; gap:10px; font-size:14px; color:#3f4a60; margin-bottom:8px}
+    .bar{height:14px; border-radius:999px; overflow:hidden; background:#edf1f5; border:1px solid #e1e6ec}
+    .fill{height:100%; width:0%; border-radius:999px; background:linear-gradient(90deg,var(--sun),var(--coral),var(--sky)); transition:width .28s ease}
+    .note{font-size:13px; color:#707888}
+    .story{font-size:16px; color:#424a5b}
+    .step{min-height:96px; display:flex; align-items:center; justify-content:center; text-align:center; padding:14px; border-radius:20px; background:#fff; border:1px solid #e7dfd4; font-weight:900; color:#263150}
+    .table{width:100%; border-collapse:separate; border-spacing:0; overflow:hidden; border-radius:18px; border:1px solid #e5ddd3; background:#fff}
+    .table th,.table td{padding:12px 13px; text-align:left; border-bottom:1px solid #eee7df}
+    .table th{background:#fff3df; color:#644100; font-size:13px}
+    .table td{color:#606879}
+    .table tr:last-child td{border-bottom:0}
+    .plain-list{display:grid; gap:12px; margin-top:16px}
+    .plain-item{padding:16px; border-radius:18px; background:#fff; border:1px solid #e9e1d7}
+    .plain-item strong{color:#263150}
+    .foot{padding:34px 0 56px; color:#697281; font-size:13px}
+    @media(max-width:900px){.hero-grid,.demo-grid,.two,.three{grid-template-columns:1fr}.output-top{grid-template-columns:repeat(2,1fr)}.nav-inner{align-items:flex-start; flex-direction:column}}
+    @media(max-width:520px){.wrap{width:min(100% - 24px,1120px)}.hero{padding-top:44px}.output-top,.mini-kpis{grid-template-columns:1fr}.card-pad{padding:19px}.nav-links{display:none}h1{letter-spacing:-1.6px}}
+  </style>
+</head>
+<body>
+  <nav class="nav">
+    <div class="wrap nav-inner">
+      <div class="brand"><span class="brand-mark" aria-hidden="true"></span><span>MachiLens AI</span></div>
+      <div class="nav-links">
+        <a href="#demo">데모</a>
+        <a href="#model">모델 구조</a>
+        <a href="#data">데이터 안내</a>
+        <a href="#tech">AI/ML/DL</a>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+    <header class="hero">
+      <div class="wrap grid hero-grid">
+        <div>
+          <span class="eyebrow">🌇 브라우저에서 보는 AI 시나리오 예측 데모</span>
+          <h1>시부야 도시전략을<br/>AI로 가볍게 예측해 보는 실험실</h1>
+          <p class="lead"><strong>MachiLens AI</strong>는 시부야의 유동인구, 공실률, 관광, 숙박, K-컬처 지표와 정책 강도를 조합해 도시전략 시나리오를 비교하는 AI 시나리오 예측 데모입니다.</p>
+          <p class="human-note">이 프로젝트의 목표는 “미래를 맞혔다”가 아니라, 서로 다른 전략 가정을 한 화면에서 비교할 수 있게 만드는 것입니다. 정성적인 도시 아이디어를 데이터 구조, 모델, 결과 화면으로 끝까지 연결해 본 작업입니다.</p>
+          <div class="cta-row">
+            <a class="btn primary" href="#demo">브라우저 데모 보기</a>
+            <a class="btn" href="#model">모델 구조 보기</a>
+          </div>
+        </div>
+        <aside class="card warning">
+          <div class="card-pad">
+            <span class="tag">꼭 읽어주세요</span>
+            <h2 style="margin:14px 0 8px; color:#27334f">참고용 프로그램입니다</h2>
+            <p class="story"><strong>이 HTML 데모와 예측값은 학습·실험 기록과 방법론 설명을 위한 참고용입니다.</strong> 실제 정책, 행정, 투자, 부동산, 도시계획 의사결정에 사용하면 안 됩니다.</p>
+            <p class="note">데모 데이터는 저작권 우려가 없도록 코드로 생성한 합성 데이터입니다. 실제 시부야의 공식 예측 결과가 아닙니다.</p>
+            <div class="mini-kpis">
+              <div class="kpi"><small>도시 지표</small><b>5개</b></div>
+              <div class="kpi"><small>전략/정책 입력</small><b>6개</b></div>
+              <div class="kpi"><small>비교 시나리오</small><b>A / B / C</b></div>
+              <div class="kpi"><small>공개 데이터</small><b>합성</b></div>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </header>
+
+    <section id="demo">
+      <div class="wrap">
+        <h2 class="section-title">인터랙티브 시나리오 데모</h2>
+        <p class="section-sub">전략을 고르고 슬라이더를 움직이면 성공 가능성, 유동인구 변화, 공실률 변화, 리스크 점수가 함께 바뀝니다. Python을 실행하지 않아도 브라우저에서 프로젝트의 구조를 바로 확인할 수 있도록 만든 정적 HTML 데모입니다.</p>
+        <div class="grid demo-grid">
+          <div class="card soft-card">
+            <div class="card-pad">
+              <span class="tag blue">입력값 조절</span>
+              <label for="scenario">전략 시나리오</label>
+              <select id="scenario">
+                <option value="A">A — 최소 개입형: 현재 흐름을 크게 건드리지 않는 전략</option>
+                <option value="B" selected>B — K-컬처 + 야간경제: 관광·콘텐츠 집객 강화</option>
+                <option value="C">C — 커뮤니티 중심: 로컬 체류와 생활 밀도 강화</option>
+              </select>
+
+              <label for="night">야간경제 활성화 강도 <span id="nightVal"></span></label>
+              <input id="night" type="range" min="0" max="100" value="82" />
+              <div class="range-row"><span>낮음</span><span>높음</span></div>
+
+              <label for="kpop">K-컬처 / 팬덤 유입 강도 <span id="kpopVal"></span></label>
+              <input id="kpop" type="range" min="0" max="100" value="86" />
+              <div class="range-row"><span>낮음</span><span>높음</span></div>
+
+              <label for="support">공공·민간 지원 강도 <span id="supportVal"></span></label>
+              <input id="support" type="range" min="0" max="100" value="74" />
+              <div class="range-row"><span>낮음</span><span>높음</span></div>
+
+              <p class="note" style="margin-top:18px">실제 저장소에는 PyTorch 기반 학습 코드, 합성 데이터 생성기, baseline 비교, Streamlit 앱 구성이 포함되어 있습니다.</p>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-pad">
+              <span class="tag green">예측 결과 미리보기</span>
+              <h3 id="scenarioTitle" style="font-size:28px; margin:12px 0 4px; color:#263150">Scenario B</h3>
+              <p id="scenarioOneLine" class="note" style="margin:0 0 12px"></p>
+              <div class="output-top">
+                <div class="metric"><span>성공 가능성</span><b id="probOut">—</b></div>
+                <div class="metric"><span>유동인구 변화</span><b id="flowOut">—</b></div>
+                <div class="metric"><span>공실률 변화</span><b id="vacOut">—</b></div>
+                <div class="metric"><span>리스크</span><b id="riskOut">—</b></div>
+              </div>
+              <div class="bar-wrap">
+                <div class="bar-head"><strong>성공 가능성 범위</strong><span id="probRange">—</span></div>
+                <div class="bar"><div class="fill" id="probBar"></div></div>
+              </div>
+              <div class="bar-wrap">
+                <div class="bar-head"><strong>유동인구 증가 추정 범위</strong><span id="flowRange">—</span></div>
+                <div class="bar"><div class="fill" id="flowBar"></div></div>
+              </div>
+              <div class="bar-wrap">
+                <div class="bar-head"><strong>공실률 개선 폭</strong><span id="vacRange">—</span></div>
+                <div class="bar"><div class="fill" id="vacBar"></div></div>
+              </div>
+              <p id="interpretation" class="story" style="margin-top:18px"></p>
+              <p class="note">화면의 값은 포트폴리오 데모용입니다. 실제 도시 예측이나 정책 판단으로 해석하지 마세요.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    
+<section id="model">
+  <div class="wrap">
+    <h2 class="section-title">어떻게 만들었나</h2>
+    <p class="section-sub">처음 아이디어는 도시전략 보고서에 가까웠습니다. 이번에는 그 내용을 코드로 옮겨서, 시나리오를 선택하고 결과를 바로 확인할 수 있는 작은 예측 데모로 다시 구성했습니다.</p>
+    <div class="grid three">
+      <div class="card"><div class="card-pad"><span class="tag blue">1. 데이터 구조화</span><p class="story">유동인구, 공실률, 관광, 숙박, K-컬처 지표를 0~1 범위의 시계열 값으로 만들고, 전략 A/B/C와 정책 강도를 별도 입력값으로 구성했습니다.</p></div></div>
+      <div class="card"><div class="card-pad"><span class="tag green">2. 모델 학습</span><p class="story">PyTorch 기반 BiLSTM + Attention 모델이 도시 흐름을 읽고, MLP가 정책 변수와 결합해 시나리오별 결과를 계산합니다.</p></div></div>
+      <div class="card"><div class="card-pad"><span class="tag">3. 결과 화면</span><p class="story">예측값을 표와 슬라이더로 보여주어, Python을 실행하지 않아도 프로젝트의 구조와 한계를 브라우저에서 확인할 수 있게 했습니다.</p></div></div>
+    </div>
+  </div>
+</section>
+
+
+<section>
+  <div class="wrap grid two">
+    <div class="card"><div class="card-pad">
+      <span class="tag blue">Demo checkpoint</span>
+      <h2 class="section-title" style="font-size:30px">시나리오별 예시 출력</h2>
+      <p class="section-sub">아래 값은 합성 데이터 기반 데모 결과를 사람이 읽기 쉽게 정리한 예시입니다.</p>
+      <table class="table">
+        <thead><tr><th>시나리오</th><th>성공 가능성</th><th>유동인구</th><th>공실률</th><th>리스크</th></tr></thead>
+        <tbody>
+          <tr><td>A 최소 개입</td><td>44.5%</td><td>+5.8%</td><td>-0.8%p</td><td>낮음</td></tr>
+          <tr><td>B K-컬처+야간경제</td><td>71.3%</td><td>+10.7%</td><td>-1.1%p</td><td>중간</td></tr>
+          <tr><td>C 커뮤니티 중심</td><td>59.4%</td><td>+9.1%</td><td>-1.6%p</td><td>낮음~중간</td></tr>
+        </tbody>
+      </table>
+    </div></div>
+    <div class="card"><div class="card-pad">
+      <span class="tag green">Project background</span>
+      <h2 class="section-title" style="font-size:30px">왜 다시 만들었나</h2>
+      <p class="story">이 아이디어는 원래 대학 수업에서 시부야 도시공간 재편을 다루며 떠올렸던 기획이었습니다. 당시에는 보고서와 계획 단계에서 멈췄고, 실제로 만져볼 수 있는 서비스 형태까지 만들지는 못했습니다.</p>
+      <p class="story">이번 버전은 그때의 기획을 다시 꺼내 데이터 생성, 모델 학습, HTML 데모까지 연결해 본 리빌드입니다. 완벽한 예측기를 주장하기보다, 예전에 구현하지 못했던 아이디어를 작동하는 프로토타입으로 정리하는 데 초점을 뒀습니다.</p>
+    </div></div>
+  </div>
+</section>
+
+
+<section id="data">
+  <div class="wrap">
+    <h2 class="section-title">데이터와 저작권 처리는 이렇게 했습니다</h2>
+    <p class="section-sub">공개 패키지에는 저작권이나 개인정보 이슈가 생길 수 있는 원자료를 넣지 않았습니다. 대신 코드로 생성한 합성 샘플을 사용해 모델 구조와 데모 흐름만 보여줍니다.</p>
+    <div class="plain-list">
+      <div class="plain-item"><strong>합성 데이터 중심</strong><br/><span class="note">유동인구, 관광, 공실률, K-컬처 지표 등은 실제 데이터를 복사한 것이 아니라 모델 실험용으로 생성한 샘플입니다.</span></div>
+      <div class="plain-item"><strong>외부 이미지·지도·상용 리포트 미포함</strong><br/><span class="note">HTML은 외부 CDN, 지도 이미지, 제3자 로고, 유료 리포트 표를 불러오지 않는 단독 파일입니다.</span></div>
+      <div class="plain-item"><strong>예측값은 참고용</strong><br/><span class="note">결과는 전략 비교 방식을 보여주기 위한 예시이며, 실제 시부야의 정책 효과나 상권 전망을 보증하지 않습니다.</span></div>
+    </div>
+  </div>
+</section>
+
+
+<section id="tech">
+  <div class="wrap">
+    <h2 class="section-title">AI, 머신러닝, 딥러닝을 어떻게 썼나</h2>
+    <p class="section-sub">이 프로젝트에서 AI라는 말은 막연한 홍보 문구가 아니라, 도시전략 가정을 입력값으로 만들고 모델이 비교 가능한 예측값을 내도록 구성한 전체 흐름을 뜻합니다. 아래처럼 역할을 나눠 보면 조금 더 명확합니다.</p>
+    <div class="plain-list">
+      <div class="plain-item"><strong>AI: 전략 비교를 돕는 의사결정 보조 흐름</strong><br/><span class="note">시나리오 A/B/C와 정책 강도 값을 넣으면 성공 가능성, 유동인구 변화, 공실률 변화가 함께 계산됩니다. 사람이 감으로만 비교하던 도시전략을 숫자와 설명으로 정리하는 부분이 AI 활용 목적입니다.</span></div>
+      <div class="plain-item"><strong>머신러닝: 입력과 결과 사이의 관계를 학습</strong><br/><span class="note">합성 도시 시계열과 정책 벡터를 학습 데이터로 두고, 어떤 조합이 어떤 결과 경향을 만드는지 모델이 학습합니다. 단순히 고정 공식을 적은 것이 아니라, 데이터 샘플을 통해 예측 함수를 맞추는 구조입니다.</span></div>
+      <div class="plain-item"><strong>딥러닝: 시계열을 읽는 BiLSTM + Attention 모델</strong><br/><span class="note">유동인구, 공실률, 관광, 숙박, K-컬처 지표처럼 시간에 따라 변하는 값을 BiLSTM이 읽고, Attention이 중요한 시점을 더 보게 합니다. 그 다음 MLP가 정책 벡터와 결합해 classification과 regression 결과를 동시에 냅니다.</span></div>
+    </div>
+    <p class="note" style="margin-top:16px">정리하면, AI는 프로젝트의 문제 해결 방식, 머신러닝은 학습 방식, 딥러닝은 그 안에서 사용한 모델 구조입니다.</p>
+  </div>
+</section>
+
+  </main>
+
+  <footer class="foot">
+    <div class="wrap">
+      <strong>MachiLens AI — Shibuya Scenario Forecast Lab</strong><br/>
+      Browser demo · synthetic-data outputs · reference only · not an official forecast.
+    </div>
+  </footer>
+
+  <script>
+    const presets = {
+      A:{name:'A — 최소 개입형', one:'현재의 도시 흐름을 크게 흔들지 않는 보수적 전략입니다.', p:.445, lo:.34, hi:.56, f:.058, flo:.028, fhi:.086, v:-.008, vlo:-.014, vhi:-.002, r:.16, night:.25, kpop:.15, support:.35,
+         text:'A안은 안정적이지만 임팩트가 작습니다. 이미 있는 시부야의 기본 모멘텀에 기대는 전략이라, 큰 변화보다는 완만한 개선을 보는 쪽에 가깝습니다.'},
+      B:{name:'B — K-컬처 + 야간경제', one:'콘텐츠, 관광, 야간 체류를 묶어 집객력을 키우는 전략입니다.', p:.713, lo:.61, hi:.80, f:.107, flo:.071, fhi:.132, v:-.011, vlo:-.018, vhi:-.004, r:.28, night:.82, kpop:.86, support:.74,
+         text:'B안은 집객 효과가 가장 크게 나타나는 설정입니다. 다만 관광 회복, 야간경제 수요, 콘텐츠 트렌드에 대한 의존도가 있어서 리스크도 함께 봐야 합니다.'},
+      C:{name:'C — 커뮤니티 중심', one:'상업적 폭발력보다는 로컬 체류와 생활 밀도를 키우는 전략입니다.', p:.594, lo:.49, hi:.69, f:.091, flo:.055, fhi:.118, v:-.016, vlo:-.024, vhi:-.007, r:.21, night:.45, kpop:.35, support:.80,
+         text:'C안은 성장은 중간 정도지만 공실률 개선에서는 안정적인 신호를 보입니다. 지역 커뮤니티와 장기 체류 기반을 천천히 쌓는 전략으로 해석할 수 있습니다.'}
+    };
+    const el = id => document.getElementById(id);
+    const clamp = (x,a,b)=>Math.min(Math.max(x,a),b);
+    const pct = x => `${(x*100).toFixed(1)}%`;
+    const signedPct = x => `${x>=0?'+':''}${(x*100).toFixed(1)}%`;
+    const vacancy = x => `${x>=0?'+':''}${(x*100).toFixed(1)}%p`;
+    function riskLabel(x){return x < .18 ? '낮음' : x < .29 ? '중간' : '높음'}
+    function update(){
+      const s = el('scenario').value;
+      const base = presets[s];
+      const night = Number(el('night').value)/100;
+      const kpop = Number(el('kpop').value)/100;
+      const support = Number(el('support').value)/100;
+      el('nightVal').textContent = `(${night.toFixed(2)})`;
+      el('kpopVal').textContent = `(${kpop.toFixed(2)})`;
+      el('supportVal').textContent = `(${support.toFixed(2)})`;
+      const dn = night-base.night, dk = kpop-base.kpop, ds = support-base.support;
+      let p = clamp(base.p + .09*dn + .12*dk + .07*ds - .04*Math.max(0, night-.90), .18, .88);
+      let lo = clamp(base.lo + .08*dn + .10*dk + .06*ds, .12, .82);
+      let hi = clamp(base.hi + .08*dn + .10*dk + .06*ds, .22, .92);
+      if(lo>p) lo = clamp(p-.08,.10,.85); if(hi<p) hi = clamp(p+.08,.22,.94);
+      let f = clamp(base.f + .045*dn + .035*dk + .025*ds, -.02, .18);
+      let flo = clamp(base.flo + .045*dn + .035*dk + .025*ds, -.03, .16);
+      let fhi = clamp(base.fhi + .045*dn + .035*dk + .025*ds, .00, .20);
+      let v = clamp(base.v - .004*dn - .006*dk - .010*ds, -.035, .004);
+      let vlo = clamp(base.vlo - .004*dn - .006*dk - .010*ds, -.045, .002);
+      let vhi = clamp(base.vhi - .004*dn - .006*dk - .010*ds, -.030, .010);
+      let r = clamp(base.r + .05*(Math.abs(dn)+Math.abs(dk)+Math.abs(ds)) + .04*Math.max(0, night-.88) - .02*support, .06, .42);
+      el('scenarioTitle').textContent = base.name;
+      el('scenarioOneLine').textContent = base.one;
+      el('probOut').textContent = pct(p);
+      el('flowOut').textContent = signedPct(f);
+      el('vacOut').textContent = vacancy(v);
+      el('riskOut').textContent = riskLabel(r);
+      el('probRange').textContent = `${pct(lo)}–${pct(hi)}`;
+      el('flowRange').textContent = `${signedPct(flo)}–${signedPct(fhi)}`;
+      el('vacRange').textContent = `${vacancy(vlo)}–${vacancy(vhi)}`;
+      el('probBar').style.width = `${p*100}%`;
+      el('flowBar').style.width = `${clamp(f/.16,0,1)*100}%`;
+      el('vacBar').style.width = `${clamp(Math.abs(v)/.032,0,1)*100}%`;
+      el('interpretation').textContent = base.text;
+    }
+    ['night','kpop','support'].forEach(id=>el(id).addEventListener('input',update));
+    el('scenario').addEventListener('change',()=>{
+      const b = presets[el('scenario').value];
+      el('night').value = Math.round(b.night*100);
+      el('kpop').value = Math.round(b.kpop*100);
+      el('support').value = Math.round(b.support*100);
+      update();
+    });
+    update();
+  </script>
+</body>
+</html>

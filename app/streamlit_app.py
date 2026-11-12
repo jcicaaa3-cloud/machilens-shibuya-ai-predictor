@@ -15,8 +15,8 @@ from machilens_ai.predict import predict_scenario  # noqa: E402
 
 st.set_page_config(page_title="MachiLens AI", page_icon="🌆", layout="wide")
 st.title("MachiLens AI — Shibuya Scenario Forecast Lab")
-st.caption("시부야 도시전략 시나리오를 비교하는 AI 포트폴리오 데모입니다. 합성 데이터 기반 참고용 화면입니다.")
-st.warning("참고용 포트폴리오 데모입니다. 실제 정책, 투자, 행정, 부동산 판단에 사용하면 안 됩니다.")
+st.caption("시부야 도시전략 시나리오를 비교하는 데모입니다. 합성 데이터 기반 참고용 화면입니다.")
+st.warning("참고용 데모입니다. 실제 정책, 투자, 행정, 부동산 판단에 사용하면 안 됩니다.")
 
 checkpoint = ROOT / "artifacts" / "demo_model.pt"
 if not checkpoint.exists():

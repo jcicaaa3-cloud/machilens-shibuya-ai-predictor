@@ -1,157 +1,68 @@
-# MachiLens AI — Shibuya Scenario Forecast Lab
+# MachiLens
 
-**MachiLens AI**는 시부야 도시전략 시나리오를 비교해 보기 위한 작은 AI 예측 데모입니다.
+[English](README.md) · [日本語](README_JA.md)
 
-처음 아이디어는 대학 수업에서 시부야 도시공간 재편을 다루며 떠올린 기획이었습니다. 당시에는 보고서와 계획 단계에서 멈췄고, 실제로 작동하는 서비스나 데모까지 만들지는 못했습니다. 이번 버전은 그 아이디어를 다시 꺼내서, 합성 데이터 생성 → 모델 학습 → 예측 결과 → 브라우저 데모까지 이어지는 형태로 정리한 리빌드입니다.
+시부야 도시전략 시나리오를 비교하는 작은 모델입니다. 학습에는 합성 데이터를 썼습니다.
 
-이 프로젝트는 “시부야의 미래를 정확히 맞힌다”는 식의 예측기가 아닙니다. 관광 회복, 야간경제, K-컬처, 공실률 개선, 로컬 커뮤니티 같은 도시전략 키워드를 모델이 읽을 수 있는 입력값으로 바꾸고, 시나리오별 결과를 비교하는 방법을 보여주는 프로토타입입니다.
+시작은 시부야 재개발을 다룬 대학 수업이었습니다. 그때는 기획 보고서로 끝났고, 실제로 돌아가는 건 만들지 못했습니다. 이 레포는 그걸 다시 만든 것으로, 합성 데이터 생성기, PyTorch 모델, 예측 스크립트, 브라우저 데모가 들어 있습니다.
 
-## Live HTML demo
+실제 시부야를 예측하는 모델이 아닙니다. 데이터는 전부 코드로 만든 것이고, 결과를 정책·투자·부동산 판단에 쓰면 안 됩니다.
 
-브라우저에서 바로 열 수 있는 정적 데모가 포함되어 있습니다.
+데모: https://jcicaaa3-cloud.github.io/machilens-shibuya-ai-predictor/
 
-```text
-index.html
-demo.html
-docs/index.html
-```
+## 시나리오
 
-GitHub Pages를 켜면 `index.html`이 바로 데모 페이지로 열립니다.
+| 시나리오 | 내용 |
+| --- | --- |
+| A | 최소 개입 |
+| B | K-컬처와 야간경제 |
+| C | 로컬 커뮤니티 |
 
-## 참고용 안내
+입력은 시나리오와 슬라이더 3개(야간경제, K-pop 팬덤, 정책 지원)입니다. 출력은 성공 확률, 유동인구 변화, 공실률 변화, 리스크 점수입니다.
 
-이 저장소의 예측값과 HTML 데모는 **방법론 설명과 포트폴리오 검토를 위한 참고용**입니다. 실제 정책, 행정, 도시계획, 투자, 부동산, 상권 의사결정에 사용하면 안 됩니다.
+## 모델
 
-공개 패키지의 데이터는 코드로 생성한 **합성 데이터**입니다. 외부 지도 이미지, 상용 리포트, 유료 데이터, 민간 원자료, 개인정보가 포함된 원본 문서는 포함하지 않았습니다.
+- 도시 지표 5개, 24스텝 시계열을 읽는 BiLSTM + 시간축 어텐션
+- 시계열 인코딩과 6차원 시나리오·정책 벡터를 합치는 MLP
+- 헤드 3개: 성공 분류, 시나리오 분류, 유동인구·공실률 변화 회귀
+- MC dropout(16회 샘플링)으로 출력 범위 계산
 
-## 이 프로젝트에서 AI / 머신러닝 / 딥러닝은 무엇인가
+코드는 `src/machilens_ai/`에 있습니다.
 
-- **AI**: 도시전략 가정을 입력으로 넣고, 결과를 비교해 보는 의사결정 보조 흐름입니다.
-- **머신러닝**: 합성 도시 시계열과 정책 벡터를 학습 데이터로 사용해 입력과 결과 사이의 관계를 학습합니다.
-- **딥러닝**: PyTorch 기반 BiLSTM + Attention 모델이 시간에 따라 변하는 도시 지표를 읽고, MLP가 정책 벡터와 결합해 결과를 예측합니다.
+## 결과
 
-## What it does
+레포에 들어 있는 데모 실행(합성 샘플 700개, 3 에폭) 결과입니다. 파일: `reports/demo_metrics.json`, `reports/baseline_metrics.json`.
 
-MachiLens compares three Shibuya strategy scenarios:
+| 모델 | 성공 정확도 | Brier | 유동인구 MAE | 공실률 MAE |
+| --- | ---: | ---: | ---: | ---: |
+| BiLSTM + 어텐션 | 0.60 | 0.248 | 0.020 | 0.043 |
+| 랜덤 포레스트(베이스라인) | 0.85 | 0.117 | 0.017 | 0.010 |
 
-| Scenario | Meaning |
-|---|---|
-| A | Minimal intervention / 현재 흐름을 크게 바꾸지 않는 전략 |
-| B | K-culture + night economy / 콘텐츠·관광·야간 체류 강화 |
-| C | Community-oriented / 로컬 커뮤니티와 생활 밀도 강화 |
+이 실행에서는 모든 지표에서 랜덤 포레스트 베이스라인이 신경망 모델보다 좋습니다.
 
-The demo predicts:
+## 데모 숫자에 대해
 
-- strategy success probability
-- expected pedestrian-flow change
-- expected vacancy-rate change
-- simple risk score
-- uncertainty-style output range
+브라우저 데모와 `reports/prediction_*.json`의 값은 신경망의 원래 출력이 아닙니다. `predict.py`가 시나리오별 프리셋 값으로 바꾸고 슬라이더 값에 따라 선형으로 조정합니다(`calibrate_demo_output`). 브라우저 데모도 같은 식을 JavaScript로 계산할 뿐 모델을 돌리지 않습니다. 신경망의 원래 출력은 각 예측 파일의 `raw_model_output`에 남겨 뒀습니다.
 
-## Model architecture
-
-The model is implemented in PyTorch.
-
-```text
-1. Synthetic data generator
-   Generates normalized urban time-series windows.
-
-2. Feature builder
-   Converts A/B/C scenario and policy sliders into a 6D context vector.
-
-3. BiLSTM encoder
-   Reads recent urban indicator patterns.
-
-4. Temporal attention
-   Highlights important time steps in the sequence.
-
-5. Fusion MLP
-   Combines city trend representation with scenario/policy context.
-
-6. Multi-task heads
-   - success probability classification
-   - scenario classification
-   - pedestrian-flow / vacancy-rate regression
-```
-
-## Repository structure
-
-```text
-machilens-shibuya-ai-predictor/
-├── index.html                    # static browser demo
-├── demo.html                     # same demo, direct-open version
-├── docs/index.html                # GitHub Pages entry
-├── src/machilens_ai/              # PyTorch model and data pipeline
-├── app/streamlit_app.py           # optional Streamlit dashboard
-├── data/synthetic/                # generated synthetic sample data
-├── reports/                       # demo prediction outputs and notes
-├── scripts/                       # demo runner and package checker
-├── tests/                         # pytest checks
-└── README_KO.md                   # Korean README
-```
-
-## Quick start
+## 실행
 
 ```bash
 python -m venv .venv
-source .venv/bin/activate
+source .venv/bin/activate        # Windows: .\.venv\Scripts\Activate.ps1
 pip install -r requirements.txt
-```
 
-On Windows PowerShell:
-
-```powershell
-python -m venv .venv
-.\.venv\Scripts\Activate.ps1
-pip install -r requirements.txt
-```
-
-Run tests:
-
-```bash
-pytest
-```
-
-Train a demo model:
-
-```bash
+PYTHONPATH=src pytest
 PYTHONPATH=src python -m machilens_ai.train --epochs 3 --n-samples 900
+PYTHONPATH=src python -m machilens_ai.predict --scenario B --night-economy 0.82 --kpop-fandom 0.86 --policy-support 0.74
+streamlit run app/streamlit_app.py   # 선택
 ```
 
-Predict one scenario:
+## 한계
 
-```bash
-PYTHONPATH=src python -m machilens_ai.predict   --scenario B   --night-economy 0.82   --kpop-fandom 0.86   --policy-support 0.74
-```
+- 데이터가 합성입니다. 결과는 생성 코드에 넣은 가정에 따라 달라집니다.
+- 블록 단위 지리 정보가 없고, 도시를 집계 지표 5개로만 표현합니다.
+- 실제로 쓰려면 검증된 데이터와 실제 결과 대조가 필요합니다.
 
-Run Streamlit:
+## 라이선스
 
-```bash
-streamlit run app/streamlit_app.py
-```
-
-## GitHub Pages
-
-After pushing the repository:
-
-```text
-Settings → Pages → Deploy from a branch → main → /root → Save
-```
-
-Recommended repository name:
-
-```text
-machilens-shibuya-ai-predictor
-```
-
-## Limitations
-
-- The current data is synthetic and should not be interpreted as official Shibuya data.
-- The model is a portfolio prototype, not a production forecasting system.
-- Scenario outputs depend on the assumptions built into the generator.
-- Real deployment would require verified public/private datasets, geospatial granularity, validation, and expert review.
-- Results should be used for scenario exploration only.
-
-## License
-
-MIT License.
+MIT
